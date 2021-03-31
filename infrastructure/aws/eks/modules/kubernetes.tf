@@ -3,7 +3,7 @@
 module "eks" {
   source              = "terraform-aws-modules/eks/aws"
   cluster_name        = var.cluster_name
-  # config_output_path  = "./output/${var.cluster_name}.yaml"
+  config_output_path  = "./${var.cluster_name}.yaml"
   cluster_version     = var.k8s_version
   subnets             = module.vpc.private_subnets
 
@@ -18,7 +18,7 @@ module "eks" {
   node_groups = var.node_groups
 }
 
-# Rbac
+# # Rbac
 
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
@@ -35,19 +35,14 @@ provider "kubernetes" {
   load_config_file       = false
 }
 
-# resource "kubernetes_namespace" "devops" {
-#   metadata {
-#     name = "devops"
-#   }
-# }
-
 resource "kubernetes_service_account" "devops" {
   metadata {
     name = "devops"
     namespace = "kube-system"
     labels = {
-      kubernetes.io/cluster-service ="true"
-      addonmanager.kubernetes.io/mode = Reconcile
+      "kubernetes.io/cluster-service" ="true"
+      "addonmanager.kubernetes.io/mode" = "Reconcile"
+      "cluster_id" = module.eks.cluster_id
     }
   }
 }
@@ -55,6 +50,9 @@ resource "kubernetes_service_account" "devops" {
 resource "kubernetes_cluster_role_binding" "devops" {
   metadata {
     name = "devops"
+    labels = {
+      "cluster_id" = module.eks.cluster_id
+    }
   }
 
   role_ref {
@@ -75,10 +73,18 @@ data "kubernetes_service_account" "devops" {
     name = "devops"
     namespace = "kube-system"
   }
+
+  depends_on = [
+    kubernetes_service_account.devops
+  ]
 }
 
 data "kubernetes_secret" "devops" {
   metadata {
-    name = "${data.kubernetes_service_account.devops.default_secret_name}"
+    name = data.kubernetes_service_account.devops.default_secret_name
   }
+
+  depends_on = [
+    kubernetes_service_account.devops
+  ]
 }
