@@ -1,3 +1,5 @@
+AWS_ACCESS_KEY_ID="anaccesskey"
+AWS_SECRET_ACCESS_KEY="asecretkey"
 
 install:
 	@cd eks && \
@@ -9,4 +11,4 @@ uninstall:
 	terraform destroy --force
 
 token:
-	kubectl apply -f bin/create_admin_token.yaml --kubeconfig ./eks/output/*.yaml
+	kubectl apply -f create_admin_token.yaml --kubeconfig ./*.yaml
