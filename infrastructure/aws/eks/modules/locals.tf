@@ -18,6 +18,6 @@ preferences: {}
 users:
 - name: admin
   user:
-    token: 
+    token: ${base64decode(data.kubernetes_secret.devops.data.token)}
 KUBECONFIG
 }
