@@ -1,5 +1,5 @@
 variable "region"           {}
-variable "profile"          {}
+# variable "profile"          {}
 
 variable "vpc_subnet"       {}
 variable "private_subnet"   {}
