@@ -2,7 +2,7 @@
 
 Please create `.auto.tfvars` and modify `makefile`
 
-If you want to store you `terraform.tfstate` in S3, please turn it on in `maain.tf`
+If you want to store you `terraform.tfstate` in S3, please turn it on in `main.tf`
 
 Then run
 
